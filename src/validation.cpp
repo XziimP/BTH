@@ -1044,12 +1044,32 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
     int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
     // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
+    if (halvings >= 65)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
+    // Initial coin subsidy
+    CAmount nSubsidy = 0;
+
+    // Handle block subsidy according to block height.
+    // The first fork block will generate each of the allocations.
+    if (nHeight == consensusParams.BTHHeight)
+      nSubsidy = consensusParams.BTHTxFeeAlloc + consensusParams.BTHEthereumSupplyAlloc + consensusParams.BTHProjectAllocation;
+
+    // The following will look at block height before and after the fork height
+    else {
+        // Heights beyond the fork height will start at an
+        // increased offset from BTC
+        if (nHeight > consensusParams.BTHHeight)
+          nSubsidy = 100 * COIN;
+
+        // Otherwise, refer to BTC block reward for specified height
+        else
+          nSubsidy = 50 * COIN;
+
+        // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+        nSubsidy >>= halvings;
+    }
+
     return nSubsidy;
 }
 
@@ -1072,8 +1092,8 @@ bool IsInitialBlockDownload()
         return true;
     if (chainActive.Tip()->nChainWork < UintToArith256(chainParams.GetConsensus().nMinimumChainWork))
         return true;
-    if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
-        return true;
+//     if (chainActive.Tip()->GetBlockTime() < (GetTime() - nMaxTipAge))
+//         return true;
     LogPrintf("Leaving InitialBlockDownload (latching to false)\n");
     latchToFalse.store(true, std::memory_order_relaxed);
     return false;
@@ -1222,7 +1242,12 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight)
 bool CScriptCheck::operator()() {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
     const CScriptWitness *witness = &ptxTo->vin[nIn].scriptWitness;
-    return VerifyScript(scriptSig, scriptPubKey, witness, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, amount, cacheStore, *txdata), &error);
+    //return VerifyScript(scriptSig, scriptPubKey, witness, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, amount, cacheStore, *txdata), &error);
+    bool ret = VerifyScript(scriptSig, scriptPubKey, witness, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, amount, cacheStore, *txdata), &error);
+    if (ret != true) {
+        LogPrintf(">>>script check false, %d, %d, %d, %s\n", nIn, error, nFlags, ptxTo->GetHash().ToString());
+    }
+    return ret;   
 }
 
 int GetSpendHeight(const CCoinsViewCache& inputs)
@@ -2995,7 +3020,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     return true;
 }
 
-static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev)
+static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, bool checkApproved)
 {
     const int nHeight = pindexPrev == nullptr ? 0 : pindexPrev->nHeight + 1;
 
@@ -3026,21 +3051,19 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
         }
     }
 
-    if (nHeight >= consensusParams.BTHHeight &&
-        nHeight < consensusParams.BTHHeight + consensusParams.BTHPremineWindow &&
-        consensusParams.BTHPremineEnforceWhitelist)
+
+    if (block.nHeight >= consensusParams.BTHHeight &&
+       block.nHeight < consensusParams.BTHHeight + consensusParams.BTHApprovalWindow  &&
+       nHeight >= consensusParams.BTHHeight &&
+       nHeight < consensusParams.BTHHeight + consensusParams.BTHApprovalWindow &&
+       consensusParams.BTHApprovalEnforceWhitelist && checkApproved)
     {
-        if (block.vtx[0]->vout.size() != 1) {
-            return state.DoS(
-                100, error("%s: only one coinbase output is allowed",__func__),
-                REJECT_INVALID, "bad-premine-coinbase-output");
-        }
         const CTxOut& output = block.vtx[0]->vout[0];
-        bool valid = Params().IsPremineAddressScript(output.scriptPubKey, (uint32_t)nHeight);
+        bool valid = Params().IsApprovedAddressScript(output.scriptPubKey, (uint32_t)nHeight);
         if (!valid) {
             return state.DoS(
-                100, error("%s: not in premine whitelist", __func__),
-                REJECT_INVALID, "bad-premine-coinbase-scriptpubkey");
+                100, error("%s: not in approved whitelist", __func__),
+                REJECT_INVALID, "bad-approved-coinbase-scriptpubkey");
         }
     }
 
@@ -3200,7 +3223,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
     if (fNewBlock) *fNewBlock = true;
 
     if (!CheckBlock(block, state, chainparams.GetConsensus()) ||
-        !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev)) {
+        !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev, true)) {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
             setDirtyBlockIndex.insert(pindex);
@@ -3270,7 +3293,7 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
     return true;
 }
 
-bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
+bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot, bool checkApproved)
 {
     AssertLockHeld(cs_main);
     assert(pindexPrev && pindexPrev == chainActive.Tip());
@@ -3284,7 +3307,7 @@ bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams,
         return error("%s: Consensus::ContextualCheckBlockHeader: %s", __func__, FormatStateMessage(state));
     if (!CheckBlock(block, state, chainparams.GetConsensus(), fCheckPOW, fCheckMerkleRoot))
         return error("%s: Consensus::CheckBlock: %s", __func__, FormatStateMessage(state));
-    if (!ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindexPrev))
+    if (!ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindexPrev, checkApproved))
         return error("%s: Consensus::ContextualCheckBlock: %s", __func__, FormatStateMessage(state));
     if (!ConnectBlock(block, state, &indexDummy, viewNew, chainparams, true))
         return false;

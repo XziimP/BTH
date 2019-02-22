@@ -17,9 +17,9 @@ Although BTH was bootstrapped on 12 Nov to create an entirely new network, it co
 
 ## Releases
 
-This is the staging tree of Bithereum. For release version, please switch to [0.15 branch](https://github.com/dondreytaylor/BTCGPU/tree/0.15) or [release page](https://github.com/dondreytaylor/BTCGPU/releases).
+This is the staging tree of Bithereum. For release version, please switch to [0.15 branch](https://github.com/dondreytaylor/BTH/tree/0.15) or [release page](https://github.com/dondreytaylor/BTH/releases).
 
-To compile from source, please check the build documentations under [doc](https://github.com/dondreytaylor/BTCGPU/tree/master/doc).
+To compile from source, please check the build documentations under [doc](https://github.com/dondreytaylor/BTH/tree/master/doc).
 
 ## Responsible Disclosure
 
@@ -32,7 +32,7 @@ Please check our [Responsible Disclosure](https://bithereum.org/responsible-disc
 ## Links
 
 * Website: https://bithereum.org
-* Tech Spec: https://github.com/dondreytaylor/BTCGPU/wiki/Technical-Spec
+* Tech Spec: https://github.com/dondreytaylor/BTH/wiki/Technical-Spec
 * Twitter: https://twitter.com/bithereum
 * Facebook: https://www.facebook.com/bithereumofficial/
 * Forum: https://forum.bithereum.org

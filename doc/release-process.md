@@ -36,7 +36,7 @@ Check out the source code in the following directory hierarchy.
     git clone https://github.com/BTCGPU/gitian.sigs.git
     git clone https://github.com/BTCGPU/bithereum-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
-    git clone https://github.com/dondreytaylor/BTCGPU.git
+    git clone https://github.com/dondreytaylor/BTH.git
 
 ### Bitcoin maintainers/release engineers, suggestion for writing release notes
 
@@ -273,6 +273,6 @@ Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spur
 
   - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-  - Create a [new GitHub release](https://github.com/dondreytaylor/BTCGPU/releases/new)
+  - Create a [new GitHub release](https://github.com/dondreytaylor/BTH/releases/new)
 
   - Celebrate ¯\_(ツ)_/¯

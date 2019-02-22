@@ -46,7 +46,7 @@ struct Params {
     int BIP65Height;
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
-    /** Block height at which Bitcoin GPU hard fork becomes active */
+    /** Block height at which Bithereum hard fork becomes active */
     int BTHHeight;
     /** Block height at which Zawy's LWMA difficulty algorithm becomes active */
     int BTHZawyLWMAHeight;
@@ -54,9 +54,17 @@ struct Params {
     int BTHEquihashForkHeight;
     /** Limit BITCOIN_MAX_FUTURE_BLOCK_TIME **/
     int64_t BTHMaxFutureBlockTime;
-    /** Premining blocks for Bitcoin GPU hard fork **/
-    int BTHPremineWindow;
-    bool BTHPremineEnforceWhitelist;
+
+    /** Approval blocks after hard fork block **/
+    int BTHApprovalWindow;
+    int BTHDifficultyReductionWindow;
+    bool BTHApprovalEnforceWhitelist;
+
+    /** Supplies **/
+    int64_t BTHTxFeeAlloc;
+    int64_t BTHEthereumSupplyAlloc;
+    int64_t BTHProjectAllocation;
+
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -69,7 +77,7 @@ struct Params {
     uint256 powLimit;
     uint256 powLimitLegacy;
     uint256 powLimitStart;
-    
+
     const uint256& PowLimit(bool postfork) const { return postfork ? powLimit : powLimitLegacy; }
     bool fPowAllowMinDifficultyBlocks;
     bool fPowNoRetargeting;
@@ -78,7 +86,7 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespanLegacy / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
-    
+
     // Params for Digishield difficulty adjustment algorithm. (Used by mainnet currently.)
     int64_t nDigishieldAveragingWindow;
     int64_t nDigishieldMaxAdjustDown;

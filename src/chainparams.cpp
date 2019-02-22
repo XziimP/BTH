@@ -101,11 +101,12 @@ public:
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = 388381; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
         consensus.BIP66Height = 363725; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
-        consensus.BTHHeight = 491407; // Around 10/25/2017 12:00 UTC
-        consensus.BTHPremineWindow = 8000;
-        consensus.BTHZawyLWMAHeight = 536200; // Around 07/01/2018
-        consensus.BTHEquihashForkHeight = 536200; // Around 07/01/2018
-        consensus.BTHPremineEnforceWhitelist = true;
+        consensus.BTHHeight = 555555; // At or around 12/26/2018 12:00 UTC
+        consensus.BTHDifficultyReductionWindow = 20000;
+        consensus.BTHZawyLWMAHeight = consensus.BTHHeight;
+        consensus.BTHApprovalWindow = 20;
+        consensus.BTHEquihashForkHeight = consensus.BTHHeight;
+        consensus.BTHApprovalEnforceWhitelist = true;
         consensus.powLimit = uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitStart = uint256S("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitLegacy = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
@@ -122,7 +123,7 @@ public:
         consensus.nZawyLwmaMinDenominator = 10;
         consensus.bZawyLwmaSolvetimeLimitation = true;
         consensus.BTHMaxFutureBlockTime = 12 * 10 * 60; // 120 mins
-        
+
         consensus.nPowTargetTimespanLegacy = 14 * 24 * 60 * 60; // 10 minutes
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -144,21 +145,28 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000723d3581fe1bd55373540a");
-
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000047e6d2d75a348b3f02a2905"); // work for 555,554
+        
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000000003b9ce759c2a087d52abc4266f8f4ebd6d768b89defa50a"); //477890
+
+
+        // Allocations
+        consensus.BTHTxFeeAlloc = 2000000 * COIN;
+        consensus.BTHEthereumSupplyAlloc= 2730450 * COIN;
+        consensus.BTHProjectAllocation = 1600000 * COIN;
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xe1;
-        pchMessageStart[1] = 0x47;
-        pchMessageStart[2] = 0x6d;
-        pchMessageStart[3] = 0x44;
-        nDefaultPort = 8338; // different port than Bitcoin
+        pchMessageStart[0] = 0xe3;
+        pchMessageStart[1] = 0x48;
+        pchMessageStart[2] = 0x6a;
+        pchMessageStart[3] = 0x45;
+        nDefaultPort = 18553;
+
         nPruneAfterHeight = 100000;
         const size_t N = 200, K = 9;
         const size_t N2 = 144, K2 = 5;
@@ -178,12 +186,12 @@ public:
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
 
-        vSeeds.emplace_back("eu-dnsseed.bithereum-official.org", true);
-        vSeeds.emplace_back("dnsseed.bithereum.org", true);
-        vSeeds.emplace_back("dnsseed.btcgpu.org", true);
+        vSeeds.emplace_back("us-dnsseed.bithereum.network", true);
+        vSeeds.emplace_back("eu-dnsseed.bithereum.network", true);
+        vSeeds.emplace_back("sg-dnsseed.bithereum.network", true);
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,38);  // prefix: G
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,23);  // prefix: A
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,25);  // prefix: B
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,40);  // prefix: H
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
@@ -196,6 +204,7 @@ public:
 
         checkpointData = (CCheckpointData) {
             {
+                { 0, uint256S("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")},
                 { 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
                 { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
                 { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
@@ -213,18 +222,14 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 000000000000000000d97e53664d17967bd4ee50b23abb92e54a34eb222d15ae (height 478913).
-            1501801925, // * UNIX timestamp of last known number of transactions
-            243756039,  // * total number of transactions between genesis and that timestamp
-                        //   (the tx=... number in the SetBestChain debug.log lines)
-            3.1         // * estimated number of transactions per second after that timestamp
+            // Data from rpc: getchaintxstats 4096 0000000000000000002e63058c023a9a1de233554f28c7b21380b6c9003f36a8
+            /* nTime    */ 1532884444,
+            /* nTxCount */ 331282217,
+            /* dTxRate  */ 2.4
         };
-
-        vPreminePubkeys = {
-            { "02babc391be409351aa993deb10083a0a852b79b36df80954341c74522fb298c21", "0267c59df7a3653d9cef3819cfb5a2a35d3f6217f522c307f05ab5714c1c738c44", "02532558057b56b76349b6a3a8c9d39547e482869fcd9556767c83523aa02fb358", "0214a27d6aa62e4aa14ebaf4682cd90e629bcb4ab18eccfed150dbed0b447bbafa", "038f4a7a5524929642e5688c5cecac4b5c7806a6520316f53ba71dbbdb3e181037", "02bb4feeb207779054aacb49b61d325f46e0b98afb301a66dc32ca3e7484f419ef" },
-            { "0395a0b7b7fed3a09ad9a526f58955b2e6c6349678fc319fad79822d7b5727a189", "03b2c38ed954facb5adce1a8621ffb559601490125ba09e65d5e3e667a2adc6fdc", "03fd383f5b8ccb9aaedd2b5924f7198dacd2f6d38b50460b03194204344c5e8f2c", "02aa0a0aa08142f9bd3c2e794a292c68df730173bce2e6a69c2810e445df7ed363", "0291a043b4375bbde4e5e3738957ae5e83c8eecab70b90f55b3dc0b547a1ac19cf", "031f4d880c835238b97625d20579940e965a833c30fb8f643bd5e6a43ef37e0ee7" },
-            { "0328571bff52ab95267ca51d7fe2689599cb73300a3847d6440ecd9882166e1ed7", "0301411004164e5798db00227c1a8e87c4e0a0e3425057b1c650a5e88252b08035", "0399e7477f01d40af05a417cfbf98c179e0c92778fb731e7f6422036c4918cb0d1", "02f136e4181d63ec1d3f587513a21427c6ec5d5c36364f20abdf4f751ce21e485f", "02fd5c856002b77384599ea9cd6ceae515223809e6f1b63d45be5456b409d2be8e", "02bf748f7e7291e9061f32bc72ea52a325154dadddb98348307838565fc8855f4c" },
-            { "03d1198ed4659a53bbc5fd945893545ee5efda9c20d014b87c138f658ed61d9cd2", "03d558f9dd313bf6a4ebbc4f3c9209f758e21e99c1d3fb3a2fc40517f4de01d55c", "03e185dd9289d6f72ed579b2db9474e033361902cb5c60817f757652fd86910677", "023c4975dbb840e91a0047496412a8f69eaf61571d24a552713d585337bed26101", "032c8735d320b6219cb398999345fea9e6b234e5f7d9f96c6a2758658d261acd6d", "029860998228d746ec5ccdc47b451b3143c05f9e26b7b1a491d64429dcac3feb0e" },
+        
+        vApprovedPubkeys = {
+            { "02e6db859bd48db0f22e3e4c28039b719990dc68"}
         };
     }
 };
@@ -243,9 +248,12 @@ public:
         consensus.BIP66Height = -1;
         consensus.BTHHeight = 1;
         consensus.BTHZawyLWMAHeight = -1; // Activated on testnet
-        consensus.BTHEquihashForkHeight = 14300;
-        consensus.BTHPremineWindow = 50;
-        consensus.BTHPremineEnforceWhitelist = false;
+        consensus.BTHEquihashForkHeight = -1;
+
+        consensus.BTHApprovalWindow = 3;
+        consensus.BTHDifficultyReductionWindow = 1000;
+        consensus.BTHApprovalEnforceWhitelist = true;
+
         consensus.powLimit = uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitStart = uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitLegacy = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
@@ -262,7 +270,7 @@ public:
         consensus.nZawyLwmaMinDenominator = 10;
         consensus.bZawyLwmaSolvetimeLimitation = false;
         consensus.BTHMaxFutureBlockTime = 7 * 10 * 60; // 70 mins
-        
+
         consensus.nPowTargetTimespanLegacy = 14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -289,11 +297,22 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00");
 
-        pchMessageStart[0] = 0xe2;
+        // Allocations
+        consensus.BTHTxFeeAlloc = 2000000 * COIN;
+        consensus.BTHEthereumSupplyAlloc= 2730450 * COIN;
+        consensus.BTHProjectAllocation = 1600000 * COIN;
+
+        /**
+         * The message start string is designed to be unlikely to occur in normal data.
+         * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
+         * a large 32-bit integer with any alignment.
+         */
+        pchMessageStart[0] = 0xe4;
         pchMessageStart[1] = 0x48;
-        pchMessageStart[2] = 0x6e;
+        pchMessageStart[2] = 0x6a;
         pchMessageStart[3] = 0x45;
-        nDefaultPort = 18338;
+        nDefaultPort = 19553;
+
         nPruneAfterHeight = 1000;
         const size_t N = 200, K = 9;
         const size_t N2 = 144, K2 = 5;
@@ -312,12 +331,12 @@ public:
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
 
-        vSeeds.emplace_back("eu-test-dnsseed.bithereum-official.org", true);
-        vSeeds.emplace_back("test-dnsseed.bithereum.org", true);
-        vSeeds.emplace_back("test-dnsseed.btcgpu.org", true);
+        vSeeds.emplace_back("us-testnet-dnsseed.bithereum.network", true);
+        vSeeds.emplace_back("eu-testnet-dnsseed.bithereum.network", true);
+        vSeeds.emplace_back("sg-testnet-dnsseed.bithereum.network", true);
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,65); // prefix: T
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,63); // prefix: S
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
@@ -340,6 +359,10 @@ public:
             0,
             0
         };
+
+        vApprovedPubkeys = {
+            { "02e6db859bd48db0f22e3e4c28039b719990dc68"}
+        };
     }
 };
 
@@ -355,11 +378,14 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
         consensus.BIP66Height = 1251; // BIP66 activated on regtest (Used in rpc activation tests)
-        consensus.BTHHeight = 2000;
+        consensus.BTHHeight = 375;
         consensus.BTHZawyLWMAHeight = -1; // Activated on regtest
         consensus.BTHEquihashForkHeight = 2001;
-        consensus.BTHPremineWindow = 10;
-        consensus.BTHPremineEnforceWhitelist = false;
+
+        consensus.BTHApprovalWindow = 3;
+        consensus.BTHDifficultyReductionWindow = 1000;
+        consensus.BTHApprovalEnforceWhitelist = false;
+
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitStart = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitLegacy = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
@@ -397,13 +423,23 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00");
-        
+
+        // Allocations
+        consensus.BTHTxFeeAlloc = 2000000 * COIN;
+        consensus.BTHEthereumSupplyAlloc= 2730450 * COIN;
+        consensus.BTHProjectAllocation = 1600000 * COIN;
+
+        /**
+         * The message start string is designed to be unlikely to occur in normal data.
+         * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
+         * a large 32-bit integer with any alignment.
+         */
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
+        nDefaultPort = 20553;
 
-        nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
         const size_t N = 48, K = 5;
         const size_t N2 = 96, K2 = 5;
@@ -444,7 +480,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
     }
-    
+
 };
 
 class BitcoinAddressChainParam : public CMainParams
@@ -493,18 +529,23 @@ void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime,
     globalChainParams->UpdateVersionBitsParameters(d, nStartTime, nTimeout);
 }
 
-
-static CScript CltvMultiSigScript(const std::vector<std::string>& pubkeys, uint32_t lock_time) {
-    assert(pubkeys.size() == 6);
+static CScript CltvSigScript(const std::vector<std::string>& pubkeys, uint32_t lock_time) {
     CScript redeem_script;
-    if (lock_time > 0) {
-        redeem_script << lock_time << OP_CHECKLOCKTIMEVERIFY << OP_DROP;
-    }
-    redeem_script << 4;
+    redeem_script << OP_DUP << OP_HASH160;
     for (const std::string& pubkey : pubkeys) {
-        redeem_script << ToByteVector(ParseHex(pubkey));
+         redeem_script << ToByteVector(ParseHex(pubkey));
     }
-    redeem_script << 6 << OP_CHECKMULTISIG;
+    redeem_script << OP_EQUALVERIFY << OP_CHECKSIG;
+    return redeem_script;
+}
+
+static CScript MltvSigScript(const std::vector<std::string>& pubkeys, uint32_t lock_time) {
+    CScript redeem_script;
+    redeem_script << OP_HASH160;
+    for (const std::string& pubkey : pubkeys) {
+         redeem_script << ToByteVector(ParseHex(pubkey));
+    }
+    redeem_script << OP_EQUAL;
     return redeem_script;
 }
 
@@ -513,26 +554,14 @@ unsigned int CChainParams::EquihashSolutionWidth(int height) const
     return EhSolutionWidth(EquihashN(height), EquihashK(height));
 }
 
-bool CChainParams::IsPremineAddressScript(const CScript& scriptPubKey, uint32_t height) const {
-    static const int LOCK_TIME = 3 * 365 * 24 * 3600;  // 3 years
-    static const int LOCK_STAGES = 3 * 12;  // Every month for 3 years
-    assert((uint32_t)consensus.BTHHeight <= height &&
-           height < (uint32_t)(consensus.BTHHeight + consensus.BTHPremineWindow));
-    int block = height - consensus.BTHHeight;
-    int num_unlocked = consensus.BTHPremineWindow * 40 / 100;  // 40% unlocked.
-    int num_locked = consensus.BTHPremineWindow - num_unlocked;  // 60% time-locked.
-    int stage_lock_time = LOCK_TIME / LOCK_STAGES / consensus.nPowTargetSpacing;
-    int stage_block_height = num_locked / LOCK_STAGES;
-    const std::vector<std::string> pubkeys = vPreminePubkeys[block % vPreminePubkeys.size()];  // Round robin.
-    CScript redeem_script;
-    if (block < num_unlocked) {
-        redeem_script = CltvMultiSigScript(pubkeys, 0);
-    } else {
-        int locked_block = block - num_unlocked;
-        int stage = locked_block / stage_block_height;
-        int lock_time = consensus.BTHHeight + stage_lock_time * (1 + stage);
-        redeem_script = CltvMultiSigScript(pubkeys, lock_time);
-    }
-    CScript target_scriptPubkey = GetScriptForDestination(CScriptID(redeem_script));
-    return scriptPubKey == target_scriptPubkey;
+bool CChainParams::IsApprovedAddressScript(const CScript& scriptPubKey, uint32_t height) const {
+  assert((uint32_t)consensus.BTHHeight <= height &&
+         height < (uint32_t)(consensus.BTHHeight + consensus.BTHApprovalWindow));
+  int block = height - consensus.BTHHeight;
+  const std::vector<std::string> pubkeys = vApprovedPubkeys[0];
+  CScript redeem_script;
+  redeem_script = MltvSigScript(pubkeys, 0);
+  LogPrintf("redeem_script=%s\n", HexStr(redeem_script));
+  LogPrintf("scriptPubKey=%s\n", HexStr(scriptPubKey));
+  return scriptPubKey == redeem_script;
 }

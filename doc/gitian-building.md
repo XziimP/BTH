@@ -314,7 +314,7 @@ Clone the git repositories for BTCGPU and Gitian.
 
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
-git clone https://github.com/dondreytaylor/BTCGPU.git
+git clone https://github.com/dondreytaylor/BTH.git
 git clone https://github.com/BTCGPU/gitian.sigs.git
 ```
 
@@ -398,7 +398,7 @@ and inputs.
 
 For example:
 ```bash
-URL=https://github.com/dondreytaylor/BTCGPU.git
+URL=https://github.com/dondreytaylor/BTH.git
 COMMIT=ee7b46b775f3bc5f9ad294814877a516e481cc0c
 ./bin/gbuild --commit BTCGPU=${COMMIT} --url BTCGPU=${URL} ../BTCGPU/contrib/gitian-descriptors/gitian-linux.yml
 ./bin/gbuild --commit BTCGPU=${COMMIT} --url BTCGPU=${URL} ../BTCGPU/contrib/gitian-descriptors/gitian-win.yml

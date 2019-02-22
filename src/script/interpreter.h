@@ -24,7 +24,7 @@ enum
     SIGHASH_ALL = 1,
     SIGHASH_NONE = 2,
     SIGHASH_SINGLE = 3,
-    SIGHASH_FORKID = 0x40,
+    SIGHASH_FORKID = 0x10,
     SIGHASH_ANYONECANPAY = 0x80,
 };
 
@@ -32,7 +32,7 @@ enum
 enum
 {
     FORKID_BCC = 0,
-    FORKID_BTH = 79, // Atomic number AU
+    FORKID_BTH = 85, // Atomic number AU
 };
 
 static const int FORKID_IN_USE = FORKID_BTH;

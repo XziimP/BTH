@@ -29,7 +29,7 @@ Build Bithereum
 
 1. Clone the Bithereum source code and cd into `BTCGPU`
 
-        git clone https://github.com/dondreytaylor/BTCGPU
+        git clone https://github.com/dondreytaylor/BTH
         cd BTCGPU
 
 2.  Build BTCGPU:
