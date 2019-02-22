@@ -310,12 +310,12 @@ cd ..
 
 **Note**: When sudo asks for a password, enter the password for the user *debian* not for *root*.
 
-Clone the git repositories for BTCGPU and Gitian.
+Clone the git repositories for BTH and Gitian.
 
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
 git clone https://github.com/dondreytaylor/BTH.git
-git clone https://github.com/BTCGPU/gitian.sigs.git
+git clone https://github.com/BTHPOS/gitian.sigs.git
 ```
 
 Setting up the Gitian image
@@ -367,7 +367,7 @@ tail -f var/build.log
 
 Output from `gbuild` will look something like
 
-    Initialized empty Git repository in /home/debian/gitian-builder/inputs/BTCGPU/.git/
+    Initialized empty Git repository in /home/debian/gitian-builder/inputs/BTH/.git/
     remote: Counting objects: 57959, done.
     remote: Total 57959 (delta 0), reused 0 (delta 0), pack-reused 57958
     Receiving objects: 100% (57959/57959), 53.76 MiB | 484.00 KiB/s, done.
@@ -400,9 +400,9 @@ For example:
 ```bash
 URL=https://github.com/dondreytaylor/BTH.git
 COMMIT=ee7b46b775f3bc5f9ad294814877a516e481cc0c
-./bin/gbuild --commit BTCGPU=${COMMIT} --url BTCGPU=${URL} ../BTCGPU/contrib/gitian-descriptors/gitian-linux.yml
-./bin/gbuild --commit BTCGPU=${COMMIT} --url BTCGPU=${URL} ../BTCGPU/contrib/gitian-descriptors/gitian-win.yml
-./bin/gbuild --commit BTCGPU=${COMMIT} --url BTCGPU=${URL} ../BTCGPU/contrib/gitian-descriptors/gitian-osx.yml
+./bin/gbuild --commit BTH=${COMMIT} --url BTH=${URL} ../BTH/contrib/gitian-descriptors/gitian-linux.yml
+./bin/gbuild --commit BTH=${COMMIT} --url BTH=${URL} ../BTH/contrib/gitian-descriptors/gitian-win.yml
+./bin/gbuild --commit BTH=${COMMIT} --url BTH=${URL} ../BTH/contrib/gitian-descriptors/gitian-osx.yml
 ```
 
 Building fully offline
@@ -448,12 +448,12 @@ Then when building, override the remote URLs that gbuild would otherwise pull fr
 ```bash
 
 cd /some/root/path/
-git clone https://github.com/BTCGPU/bithereum-detached-sigs.git
+git clone https://github.com/BTHPOS/bithereum-detached-sigs.git
 
-BTCPATH=/some/root/path/BTCGPU
+BTCPATH=/some/root/path/BTH
 SIGPATH=/some/root/path/bithereum-detached-sigs
 
-./bin/gbuild --url BTCGPU=${BTCPATH},signature=${SIGPATH} ../BTCGPU/contrib/gitian-descriptors/gitian-win-signer.yml
+./bin/gbuild --url BTH=${BTCPATH},signature=${SIGPATH} ../BTH/contrib/gitian-descriptors/gitian-win-signer.yml
 ```
 
 Signing externally
@@ -480,5 +480,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[BTCGPU/gitian.sigs](https://github.com/BTCGPU/gitian.sigs/) repository, or if that's not possible create a pull
+[BTH/gitian.sigs](https://github.com/BTHPOS/gitian.sigs/) repository, or if that's not possible create a pull
 request.

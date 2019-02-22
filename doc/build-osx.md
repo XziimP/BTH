@@ -27,12 +27,12 @@ NOTE: Building with Qt4 is still supported, however, could result in a broken UI
 Build Bithereum
 ------------------------
 
-1. Clone the Bithereum source code and cd into `BTCGPU`
+1. Clone the Bithereum source code and cd into `BTH`
 
         git clone https://github.com/dondreytaylor/BTH
-        cd BTCGPU
+        cd BTH
 
-2.  Build BTCGPU:
+2.  Build BTH:
 
     Configure and build the headless bitcoin binaries as well as the GUI (if Qt is found).
 

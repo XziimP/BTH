@@ -1,8 +1,8 @@
 # Bithereum
 
-[![Build Status](https://travis-ci.org/dondreytaylor/BTCGPU.svg?branch=master)](https://travis-ci.org/dondreytaylor/BTCGPU)
+[![Build Status](https://travis-ci.org/dondreytaylor/BTH.svg?branch=master)](https://travis-ci.org/dondreytaylor/BTH)
 
-Bithereum (codename BTCGPU) began as a fork of Bitcoin after block height 491406 on Tue, 24 Oct 2017 01:17:35 GMT and began being mined as a separate chain at block height 491407 on Sun, 12 Nov 2017 13:34:01 GMT.
+Bithereum (codename BTH) began as a fork of Bitcoin after block height 491406 on Tue, 24 Oct 2017 01:17:35 GMT and began being mined as a separate chain at block height 491407 on Sun, 12 Nov 2017 13:34:01 GMT.
 
 The primary goal is to maintain a variant of Bitcoin that is more decentralized by using an ASIC-resistant Proof of Work algorithm, removing barriers to entry for new miners around the world and reducing the concentration of power in the hands of massive-scale mining operations.
 
