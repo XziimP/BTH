@@ -59,7 +59,7 @@ BASE_SCRIPTS= [
     # vv Tests less than 5m vv
     'p2p-fullblocktest.py',
     'fundrawtransaction.py',
-    # TODO(h4x3rotab): Temporarily disabled: 'p2p-compactblocks.py', 'bth-hardfork.py'
+    # TODO(Dondrey): Temporarily disabled: 'p2p-compactblocks.py', 'bth-hardfork.py'
     'segwit.py',
     # vv Tests less than 2m vv
     'wallet.py',
@@ -160,7 +160,7 @@ NON_SCRIPTS = [
     "combine_logs.py",
     "create_cache.py",
     "test_runner.py",
-    # TODO(h4x3rotab): Temporarily disabled:
+    # TODO(Dondrey): Temporarily disabled:
     "p2p-compactblocks.py",
     'bth-hardfork.py',
 ]
