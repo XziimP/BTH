@@ -57,15 +57,15 @@ Bithereum is now available at `./src/bethd`
 
 Before running, it's recommended you create an RPC configuration file.
 
-    echo -e "rpcuser=bitcoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "$HOME/Library/Application Support/BitcoinGold/bithereum.conf"
+    echo -e "rpcuser=bitcoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "$HOME/Library/Application Support/BithereumNetwork/bithereum.conf"
 
-    chmod 600 "$HOME/Library/Application Support/BitcoinGold/bithereum.conf"
+    chmod 600 "$HOME/Library/Application Support/BithereumNetwork/bithereum.conf"
 
 The first time you run bethd, it will start downloading the blockchain. This process could take several hours.
 
 You can monitor the download process by looking at the debug.log file:
 
-    tail -f $HOME/Library/Application\ Support/BitcoinGold/debug.log
+    tail -f $HOME/Library/Application\ Support/BithereumNetwork/debug.log
 
 Other commands:
 -------

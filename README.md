@@ -37,4 +37,4 @@ Please check our [Responsible Disclosure](https://bithereum.org/responsible-disc
 * Facebook: https://www.facebook.com/bithereumofficial/
 * Forum: https://forum.bithereum.org
 * Discord: [invitation](https://discord.gg/HmVUU6S)
-* Telegram (Global): https://t.me/BitcoinGoldHQ
+* Telegram (Global): https://t.me/BithereumNetworkHQ
